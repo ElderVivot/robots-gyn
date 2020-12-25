@@ -29,6 +29,3 @@ class Applicattion {
 }
 
 export default Applicattion
-
-const applicattion = new Applicattion()
-applicattion.process().then(_ => console.log(_))
