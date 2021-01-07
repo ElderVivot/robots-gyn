@@ -22,7 +22,7 @@ export default class TreatsMessageLog {
         // this.pathImg = path.resolve(this.pathImg, `${this.settings.messageLog}.png`)
         // await this.page.screenshot({ path: this.pathImg, fullPage: true })
         await this.page.close()
-        if (this.browser) await this.browser.close()
+        if (this.browser.isConnected()) await this.browser.close()
 
         const saveLogPrefGoiania = new SaveLogPrefGoiania()
         await saveLogPrefGoiania.saveLog({

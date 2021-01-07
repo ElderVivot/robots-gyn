@@ -23,7 +23,11 @@ class Applicattion {
                 password: access.password,
                 idUser: access.id
             }
-            await MainNfseGoiania(settings)
+            try {
+                await MainNfseGoiania(settings)
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
 }
