@@ -263,7 +263,7 @@ const MainNfseGoiania = async (settings: ISettingsGoiania): Promise<void> => {
         }
 
         console.log('[Final-Loguin] - Todos os dados deste loguin processados, fechando navegador.')
-        if (browser) await browser.close()
+        if (browser.isConnected()) await browser.close()
     } catch (error) {
         console.log(error)
     }
