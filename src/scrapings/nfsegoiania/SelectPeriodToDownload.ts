@@ -14,9 +14,11 @@ const SelectPeriodToDownload = async (page: Page, settings: ISettingsGoiania): P
             await frame.select('[name=txt_dia_final]', `${settings.dayFinalMonth}`)
             await frame.select('[name=sel_mes]', `${settings.month}`)
 
-            const inputYear = await frame.$('[name=txt_ano]')
-            await inputYear.click({ clickCount: 3 })
-            await inputYear.type(`${settings.year}`)
+            // const inputYear = await frame.$('[name=txt_ano]')
+            // await inputYear.click({ clickCount: 3 })
+            // await inputYear.type(`${settings.year}`)
+
+            await frame.evaluate(`document.querySelector('[name=txt_ano]').value="${settings.year}";`)
         } else {
             throw 'NOT_FOUND_FRAME_CPO'
         }
