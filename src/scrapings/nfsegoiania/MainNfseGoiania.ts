@@ -10,6 +10,7 @@ import SetDateInicialAndFinalOfMonth from '../../services/SetDateInicialAndFinal
 import * as functions from '../../utils/functions'
 import AlertSimplesNacional from './AlertSimplesNacional'
 import ChangeCompanie from './ChangeCompanie'
+import CheckAndCloseIfExistPopupWarning from './CheckAndCloseIfExistPopupWarning'
 import CheckIfAvisoFrameMnuAfterEntrar from './CheckIfAvisoFrameMnuAfterEntrar'
 import CheckIfEmpresaEstaBaixada from './CheckIfEmpresaEstaBaixada'
 import CheckIfExistNoteInPeriod from './CheckIfExistNoteInPeriod'
@@ -51,7 +52,7 @@ const MainNfseGoiania = async (settings: ISettingsGoiania): Promise<void> => {
 
         console.log(`[0] - Abrindo loguin ${loguin}`)
 
-        const browser = await puppeteer.launch({ headless: true, args: ['--start-maximized'] })
+        const browser = await puppeteer.launch({ headless: true, slowMo: 50, args: ['--start-maximized'] })
         const page = await browser.newPage()
         await page.setViewport({ width: 1366, height: 768 })
 
@@ -163,27 +164,30 @@ const MainNfseGoiania = async (settings: ISettingsGoiania): Promise<void> => {
                         await pageMonth.setViewport({ width: 0, height: 0 })
                         await pageMonth.goto(urlActualEmpresa)
 
+                        console.log('\t\t[10] - Verificando se tem aviso pro contribuinte, caso sim, fechando-o')
+                        await CheckAndCloseIfExistPopupWarning(pageMonth)
+
                         settings.dateStartDown = format(new Date(zonedTimeToUtc(settings.dateStartDown, 'America/Sao_Paulo')), 'yyyy-MM-dd hh:mm:ss a', { timeZone: 'America/Sao_Paulo' })
                         settings.dateEndDown = format(new Date(zonedTimeToUtc(settings.dateEndDown, 'America/Sao_Paulo')), 'yyyy-MM-dd hh:mm:ss a', { timeZone: 'America/Sao_Paulo' })
 
                         try {
-                            console.log('\t\t[10] - Clicando no botão "NF-e Eletrônica"')
+                            console.log('\t\t[11] - Clicando no botão "NF-e Eletrônica"')
                             await ClickNFeEletronica(pageMonth, settings)
 
-                            console.log('\t\t[11] - Clicando no botão "Entrar"')
+                            console.log('\t\t[12] - Clicando no botão "Entrar"')
                             await GotoLinkNFeEletrotinaEntrar(pageMonth, settings)
 
                             // Aviso depois do botão "Entrar" --> caso tenha aviso para o processamento desta
                             // empresa, pois geralmente quando tem é empresa sem atividade de serviço ou usuário inválido
                             await CheckIfAvisoFrameMnuAfterEntrar(pageMonth, settings)
 
-                            console.log('\t\t[12] - Passando pelo alerta do simples nacional.')
+                            console.log('\t\t[13] - Passando pelo alerta do simples nacional.')
                             await AlertSimplesNacional(pageMonth, settings)
 
-                            console.log('\t\t[13] - Clicando no botão "Download de XML de Notas Fiscais por período"')
+                            console.log('\t\t[14] - Clicando no botão "Download de XML de Notas Fiscais por período"')
                             await ClickDownloadXML(pageMonth, settings)
 
-                            console.log('\t\t[14] - Pegando o CNPJ/CPF do Prestador')
+                            console.log('\t\t[15] - Pegando o CNPJ/CPF do Prestador')
                             settings.cgceCompanie = await GetCNPJPrestador(pageMonth, settings)
 
                             if (!settings.codeCompanie) {
@@ -200,7 +204,7 @@ const MainNfseGoiania = async (settings: ISettingsGoiania): Promise<void> => {
                                 })
                             }
 
-                            console.log('\t\t[15] - Checando se esta empresa é cliente neste período')
+                            console.log('\t\t[16] - Checando se esta empresa é cliente neste período')
                             if (companiesOnlyActive && !settings.codeCompanie) {
                                 try {
                                     throw 'COMPANIE_NOT_CLIENT_THIS_ACCOUNTING_OFFICE'
@@ -218,10 +222,10 @@ const MainNfseGoiania = async (settings: ISettingsGoiania): Promise<void> => {
                                 }
                             }
 
-                            console.log('\t\t[16] - Seleciona o período desejado pra baixar os XMLs')
+                            console.log('\t\t[17] - Seleciona o período desejado pra baixar os XMLs')
                             await SelectPeriodToDownload(pageMonth, settings)
 
-                            console.log('\t\t[17] - Clicando no botão "Listar"')
+                            console.log('\t\t[18] - Clicando no botão "Listar"')
                             const newPagePromise: Promise<Page> = new Promise(resolve => (
                                 browser.once('targetcreated', target => resolve(target.page()))
                             ))
@@ -230,16 +234,16 @@ const MainNfseGoiania = async (settings: ISettingsGoiania): Promise<void> => {
                             // Verifica se tem notas no período solicitado, caso não, para o processamento
                             await CheckIfExistNoteInPeriod(pageMonth, settings)
 
-                            console.log('\t\t[18] - Abrindo os dados das notas')
+                            console.log('\t\t[19] - Abrindo os dados das notas')
                             await ClickToOpenContentXML(pageMonth, settings)
 
-                            console.log('\t\t[19] - Obtendo conteúdo das notas')
+                            console.log('\t\t[20] - Obtendo conteúdo das notas')
                             const contentXML = await GetContentXML(pageMonth, settings)
 
-                            console.log('\t\t[20] - Retirando caracteres inválidos dos XMLs')
+                            console.log('\t\t[21] - Retirando caracteres inválidos dos XMLs')
                             const contentXMLSerializable = await SerializeXML(pageMonth, settings, contentXML)
 
-                            console.log('\t\t[21] - Enviando XMLs das notas para as filas')
+                            console.log('\t\t[22] - Enviando XMLs das notas para as filas')
                             await SendXMLToQueues(settings, contentXMLSerializable)
 
                             // Fecha a aba do mês afim de que possa abrir outra
