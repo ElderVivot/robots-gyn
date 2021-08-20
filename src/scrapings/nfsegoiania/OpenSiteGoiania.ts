@@ -7,7 +7,7 @@ const OpenSiteGoiania = async (page: Page, browser: Browser, settings: ISettings
     try {
         await page.goto('https://www10.goiania.go.gov.br/Internet/Login.aspx', { timeout: 30000 })
         const textButtonEntrar = await page.evaluate(() => {
-            return document.querySelector('#wt17_wtMainContent_wt28')?.getAttribute('value')
+            return document.querySelector('input[value="ENTRAR"]')?.getAttribute('value')
         })
         if (!textButtonEntrar) {
             throw 'NOT_PAGE_CORRECT'

@@ -6,16 +6,16 @@ import TreatsMessageLog from './TreatsMessageLog'
 
 const Loguin = async (page: Page, browser: Browser, settings: ISettingsGoiania): Promise<void> => {
     try {
-        await page.waitFor('#wt17_wtMainContent_wtUserNameInput')
-        await page.type('#wt17_wtMainContent_wtUserNameInput', settings.loguin)
-        await page.type('#wt17_wtMainContent_wtPasswordInput', settings.password)
-        await page.click('#wt17_wtMainContent_wt28')
+        await page.waitFor('input[name*="UserNameInput"]')
+        await page.type('input[name*="UserNameInput"]', settings.loguin)
+        await page.type('input[name*="PasswordInput"]', settings.password)
+        await page.click('input[value="ENTRAR"]')
         await page.waitFor(4000)
 
         let userInvalid = ''
         try {
             userInvalid = await page.evaluate(() => {
-                const warning = document.querySelector('#wt13_WebPatterns_wt4_block_RichWidgets_wt9_block_wtSanitizedHtml2')?.textContent
+                const warning = document.querySelector('span[id*="SanitizedHtml"')?.textContent
                 return treateTextField(warning)
             })
         } catch (error) { }

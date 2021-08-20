@@ -5,9 +5,9 @@ import TreatsMessageLog from './TreatsMessageLog'
 
 const ClickPortalContribuinte = async (page: Page, browser: Browser, settings: ISettingsGoiania): Promise<void> => {
     try {
-        await page.waitFor('#wt26_wtMainContent_wtSistemaTable')
+        await page.waitFor('table[id*="SistemaTable"]')
         const IDTablePortalContribuinte = await page.evaluate(() => {
-            const trs = document.querySelectorAll('#wt26_wtMainContent_wtSistemaTable > tbody > tr')
+            const trs = document.querySelectorAll('table[id*="SistemaTable"] > tbody > tr')
             let id = ''
             trs.forEach(value => {
                 const tagA = value.getElementsByTagName('a')[0]
