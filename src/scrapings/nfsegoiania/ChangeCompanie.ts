@@ -5,10 +5,10 @@ import TreatsMessageLog from './TreatsMessageLog'
 
 const ChangeCompanie = async (page: Page, settings: ISettingsGoiania): Promise<void> => {
     try {
-        await page.waitFor('#GoianiaTheme_wtTelaPrincipal_block_wtActions_SISEGIntegration_wt100_block_wtAcessos')
-        await page.select('#GoianiaTheme_wtTelaPrincipal_block_wtActions_SISEGIntegration_wt100_block_wtAcessos', settings.valueLabelSite || '')
+        await page.waitFor('select[id*="GoianiaTheme_wtTelaPrincipal_block_wtActions_SISEGIntegration"]')
+        await page.select('select[id*="GoianiaTheme_wtTelaPrincipal_block_wtActions_SISEGIntegration"]', settings.valueLabelSite || '')
     } catch (error) {
-        console.log('\t[Final-Empresa] - Erro ao clicar no botão "NF-e Eletrônica"')
+        console.log('\t[Final-Empresa] - Erro ao trocar de empresa')
         console.log('\t-------------------------------------------------')
         settings.typeLog = 'error'
         settings.messageLog = 'ChangeCompanie'

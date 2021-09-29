@@ -5,11 +5,13 @@ import TreatsMessageLog from './TreatsMessageLog'
 
 const GotoLinkNFeEletrotinaEntrar = async (page: Page, settings: ISettingsGoiania): Promise<void> => {
     try {
-        await page.waitFor('#GoianiaTheme_wtTelaPrincipal_block_wtMainContent_WebPatterns_wt149_block_wtContent1_wt52_WebPatterns_wt66_block_wtContent_wt295')
+        const selector = 'div[id*="GoianiaTheme_wtTelaPrincipal_block_wtMainContent_WebPatterns_wt"] > div > div > div > a[id*="GoianiaTheme_wtTelaPrincipal_block_wtMainContent_WebPatterns_wt"]' && 'div[id*="GoianiaTheme_wtTelaPrincipal_block_wtMainContent_WebPatterns_wt"] > div > div > div > a[id*="_block_wtContent_wt"]'
+        await page.waitFor(selector)
 
-        const urlButtonEntrar = await page.evaluate(
-            () => document.querySelector('#GoianiaTheme_wtTelaPrincipal_block_wtMainContent_WebPatterns_wt149_block_wtContent1_wt52_WebPatterns_wt66_block_wtContent_wt295')?.getAttribute('href')
-        )
+        // const urlButtonEntrar = await page.evaluate(
+        //     () => document.querySelector(selector)?.getAttribute('href')
+        // )
+        const urlButtonEntrar = await page.$eval(selector, element => element.getAttribute('href'))
         if (urlButtonEntrar) {
             page.on('dialog', async dialog => {
                 await dialog.accept()
